@@ -147,8 +147,8 @@
 
       <fieldset class="payment-methods">
         <legend>Payment Info</legend>
-
-        <div class="payment-method-box">
+        <!-- added a unique id to change the padding when displaying a real-time error -->
+        <div id="payment-method" class="payment-method-box">
           <label for="payment">I'm going to pay with:</label>
           <select id="payment" name="user-payment">
             <option value="select method" hidden>Select Payment Method</option>
