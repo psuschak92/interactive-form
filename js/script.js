@@ -1,26 +1,27 @@
 // focus name field by default
 const userName = document.getElementById('name');
+const nameEmptyErr = document.getElementById('name-hint');
 userName.focus();
 // adds real-time validation to name field
-userName.addEventListener('keyup', () => { validateNameField(userName); });
-userName.addEventListener('blur', () => { validateNameField(userName); });
+userName.addEventListener('keyup', () => { nameFieldHelper(userName); });
+userName.addEventListener('blur', () => { nameFieldHelper(userName); });
 
 const userEmail = document.getElementById('email');
 // display real-time message if the field is left empty
-const emailEmptyError = document.createElement('span');
-emailEmptyError.textContent = 'Email address cannot be empty';
-emailEmptyError.classList.add('email-hint');
-emailEmptyError.classList.add('hint');
+const emailEmptyErr = document.createElement('span');
+emailEmptyErr.textContent = 'Email address cannot be empty';
+emailEmptyErr.classList.add('email-hint');
+emailEmptyErr.classList.add('hint');
 // error message must be added to the parent label 
-userEmail.parentElement.appendChild(emailEmptyError);
+userEmail.parentElement.appendChild(emailEmptyErr);
 // adds real-time validation to the email field
 userEmail.addEventListener('keyup', (event) => {
     // this line prevents a message from being displayed right away if field is tabbed into
     if (event.code !== 'Tab'){
-        validateEmailField(userEmail);
+        emailFieldHelper(userEmail);
     }
 });
-userEmail.addEventListener('blur', () => { validateEmailField(userEmail); });
+userEmail.addEventListener('blur', () => { emailFieldHelper(userEmail); });
 
 // hide other job role field by default
 const otherJobRole = document.getElementById('other-job-role');
@@ -34,47 +35,47 @@ paymentMethod.addEventListener('change', () => showPaymentOption(paymentMethod, 
 
 const cardNum = document.getElementById('cc-num');
 
-const cardEmptyError = document.createElement('span');
-cardEmptyError.textContent = 'Credit card number cannot be empty';
-cardEmptyError.classList.add('cc-hint');
-cardEmptyError.classList.add('hint');
+const cardEmptyErr = document.createElement('span');
+cardEmptyErr.textContent = 'Credit card number cannot be empty';
+cardEmptyErr.classList.add('cc-hint');
+cardEmptyErr.classList.add('hint');
 // add error message to the parent label 
-cardNum.parentElement.appendChild(cardEmptyError);
+cardNum.parentElement.appendChild(cardEmptyErr);
 // adds real-time validation to the card input fields
 cardNum.addEventListener('keyup', (event) => {
     if (event.code !== 'Tab') {
-        validateCardNumberField(cardNum);
+        cardNumberFieldHelper(cardNum);
     }
 });
-cardNum.addEventListener('blur', () => { validateCardNumberField(cardNum); });
+cardNum.addEventListener('blur', () => { cardNumberFieldHelper(cardNum); });
 
 const zipCode = document.getElementById('zip');
-const zipEmptyError = document.createElement('span');
-zipEmptyError.textContent = 'Zip Code cannot be empty';
-zipEmptyError.classList.add('zip-hint');
-zipEmptyError.classList.add('hint');
+const zipEmptyErr = document.createElement('span');
+zipEmptyErr.textContent = 'Zip Code cannot be empty';
+zipEmptyErr.classList.add('zip-hint');
+zipEmptyErr.classList.add('hint');
 // add error message to the parent label 
-zipCode.parentElement.appendChild(zipEmptyError);
+zipCode.parentElement.appendChild(zipEmptyErr);
 zipCode.addEventListener('keyup', (event) => {
     if (event.code !== 'Tab') {
-        validateZipCodeField(zipCode);
+        zipCodeFieldHelper(zipCode);
     }
 });       
-zipCode.addEventListener('blur', () => { validateZipCodeField(zipCode); });
+zipCode.addEventListener('blur', () => { zipCodeFieldHelper(zipCode); });
 
 const cvv = document.getElementById('cvv');
-const cvvEmptyError = document.createElement('span');
-cvvEmptyError.textContent = 'Zip Code cannot be empty';
-cvvEmptyError.classList.add('zip-hint');
-cvvEmptyError.classList.add('hint');
+const cvvEmptyErr = document.createElement('span');
+cvvEmptyErr.textContent = 'Zip Code cannot be empty';
+cvvEmptyErr.classList.add('zip-hint');
+cvvEmptyErr.classList.add('hint');
 // add error message to the parent label 
-cvv.parentElement.appendChild(cvvEmptyError);
+cvv.parentElement.appendChild(cvvEmptyErr);
 cvv.addEventListener('keyup', (event) => {
     if (event.code !== 'Tab') {
-        validateCVVField(cvv);
+        cvvFieldHelper(cvv);
     }
 });
-cvv.addEventListener('blur', () => { validateCVVField(cvv); });
+cvv.addEventListener('blur', () => { cvvFieldHelper(cvv); });
 
 // initialize cc dropdown elements
 const paymentMethodBox = document.getElementById('payment-method');
@@ -83,14 +84,14 @@ const expDateErr = document.createElement('span');
 expDateErr.textContent = 'Please select a date from the dropdown';
 expDateErr.classList.add('hint');
 expDate.parentElement.appendChild(expDateErr);
-expDate.addEventListener('blur', () => { validateExpDateField(expDate); });
+expDate.addEventListener('blur', () => { expDateFieldHelper(expDate); });
 
 const expYear = document.getElementById('exp-year');
 const expYearErr = document.createElement('span');
 expYearErr.textContent = 'Please select a year from the dropdown';
 expYearErr.classList.add('hint');
 expYear.parentElement.appendChild(expYearErr);
-expYear.addEventListener('blur', () => { validateExpYearField(expYear); });
+expYear.addEventListener('blur', () => { expYearFieldHelper(expYear); });
         
 // display hidden field if title is other
 const title = document.getElementById('title');
@@ -108,28 +109,23 @@ color.disabled = true;
 const shirtDesigns = document.getElementById('design');
 shirtDesigns.addEventListener('change', () => {
     color.disabled = false;
-    // TODO: condense these loops into one function
-    // check the data-theme option for matches to the hard-coded string
     if (shirtDesigns.value === 'js puns') {
-        for(let i = 0; i < color.options.length; i++) {
-            const option = color.options[i];
-            if (option.dataset.theme !== 'js puns'){
-                option.hidden = true;
-            } else {
-                option.hidden = false;
-            } 
-        }
+        hideColors(shirtDesigns.value);
     } else if (shirtDesigns.value === 'heart js') {
-        for(let i = 0; i < color.options.length; i++) {
-            const option = color.options[i];
-            if (option.dataset.theme !== 'heart js'){
-                option.hidden = true;
-            } else {
-                option.hidden = false;
-            }
-        }
+        hideColors(shirtDesigns.value);
     }
 });
+
+function hideColors(theme) {
+    for(let i = 0; i < color.options.length; i++) {
+        const option = color.options[i];
+        if (option.dataset.theme !== theme){
+            option.hidden = true;
+        } else {
+            option.hidden = false;
+        } 
+    }
+}
 
 const activities = document.getElementById('activities');
 activities.addEventListener('change', () => {
@@ -143,34 +139,30 @@ activities.addEventListener('change', () => {
             costCount += parseInt(checkbox.dataset.cost);
             totalCost = activitiesCost.textContent.replace(/\d+/, `${costCount}`);
             activitiesCost.textContent = totalCost;
-            if (checkbox.name === 'js-libs' || checkbox.name === 'node' || checkbox.name === 'js-frameworks' || checkbox.name === 'build-tools') {
-                for (let j = 1; j < checkboxes.length; j++) {
-                    if (checkboxes[j].dataset.dayAndTime === checkbox.dataset.dayAndTime && checkboxes[j].name !== checkbox.name) {
-                        checkboxes[j].disabled = true;
-                        checkboxes[j].parentElement.classList.add('disabled');
-                    }
-                }
-            }
+            isScheduleConflict(checkbox, checkboxes, true);
         } else {
-            if (checkbox.name === 'js-libs' || checkbox.name === 'node' || checkbox.name === 'js-frameworks' || checkbox.name === 'build-tools') {
-                for (let j = 1; j < checkboxes.length; j++) {
-                    if (checkboxes[j].dataset.dayAndTime === checkbox.dataset.dayAndTime && checkboxes[j].name !== checkbox.name) {
-                        checkboxes[j].disabled = false;
-                        checkboxes[j].parentElement.classList.remove('disabled');
-                    }
-                }
-            }
+            isScheduleConflict(checkbox, checkboxes, false);
         }
     }
     // set cost count to zero if all the activities remain unchecked 
     if(!costCount) {
         totalCost = activitiesCost.textContent.replace(/\d+/, `${costCount}`);
         activitiesCost.textContent = totalCost;
-        validateCheckBoxEvents(checkboxes);
+        // throw an error if checkbox left unchecked
+        checkboxEventsHelper(checkboxes);
     } else {
-        validateCheckBoxEvents(checkboxes);
+        checkboxEventsHelper(checkboxes);
     }
 });
+
+function isScheduleConflict(checkbox, checkboxes, disable) {
+    for (let j = 1; j < checkboxes.length; j++) {
+        if (checkboxes[j].dataset.dayAndTime === checkbox.dataset.dayAndTime && checkboxes[j].name !== checkbox.name) {
+            checkboxes[j].disabled = disable;
+            disable ? checkboxes[j].parentElement.classList.add('disabled') : checkboxes[j].parentElement.classList.remove('disabled');
+        }
+    }
+}
 
 const checkboxes = activities.getElementsByTagName('input');
 // add a focus and blur listener to all checkboxes
@@ -199,31 +191,27 @@ function showPaymentOption(optionList, optionVal = 'credit-card') {
 
 const form = document.querySelector('form');
 form.addEventListener('submit', (event) => {
-    // could use else ifs here as well
-    if (!validateNameField(userName)) { event.preventDefault(); }
+    if (!nameFieldHelper(userName)) { event.preventDefault(); }
 
-    if (!validateEmailField(userEmail)) { event.preventDefault(); }
+    if (!emailFieldHelper(userEmail)) { event.preventDefault(); }
     
-    if (!validateCheckBoxEvents(activities.getElementsByTagName('input'))) { event.preventDefault(); }
+    if (!checkboxEventsHelper(activities.getElementsByTagName('input'))) { event.preventDefault(); }
 
     if (paymentMethod.value === 'credit-card') {
         
-        if (!validateExpDateField(expDate)) { event.preventDefault(); }
+        if (!expDateFieldHelper(expDate)) { event.preventDefault(); }
 
-        if (!validateExpYearField(expYear)) { event.preventDefault(); }
+        if (!expYearFieldHelper(expYear)) { event.preventDefault(); }
         
-        if (!validateCardNumberField(cardNum)) { event.preventDefault(); }
+        if (!cardNumberFieldHelper(cardNum)) { event.preventDefault(); }
         
-        if (!validateZipCodeField(zipCode)) { event.preventDefault(); }
+        if (!zipCodeFieldHelper(zipCode)) { event.preventDefault(); }
         
-        if (!validateCVVField(cvv)) { event.preventDefault(); }
+        if (!cvvFieldHelper(cvv)) { event.preventDefault(); }
     }
 });
 
-// the validate functions return false if a required field is null or if the required field is incorrectly formatted
-// otherwise they return true
-function validateNameField(name) {
-    const nameEmptyErr = document.getElementById('name-hint');
+function nameFieldHelper(name) {
     if (!name.value) {
         name.parentElement.classList.add('not-valid');
         name.parentElement.classList.remove('valid');
@@ -232,36 +220,36 @@ function validateNameField(name) {
     } else {
         name.parentElement.classList.add('valid');
         name.parentElement.classList.remove('not-valid');
-        nameEmptyErr.style.display = 'none';
+        nameEmptyErr.style.removeProperty('display');
         return true;
     }
 }
 
-function validateEmailField(email) {
+function emailFieldHelper(email) {
     const emailFormatError = document.getElementById('email-hint');
     // display correct message based on error being thrown
     if (!email.value) {
         email.parentElement.classList.add('not-valid');
         email.parentElement.classList.remove('valid');        
-        emailEmptyError.style.display = 'inline';
-        emailFormatError.style.display = 'none';
+        emailEmptyErr.style.display = 'inline';
+        emailFormatError.style.removeProperty('display');
         return false;
     } else if (!testEmail(email.value)){
         email.parentElement.classList.add('not-valid');
         email.parentElement.classList.remove('valid');
         emailFormatError.style.display = 'inline';
-        emailEmptyError.style.display = 'none'; 
+        emailEmptyErr.style.removeProperty('display');
         return false;
     } else {
         email.parentElement.classList.add('valid');
         email.parentElement.classList.remove('not-valid'); 
-        emailFormatError.style.display = 'none';
-        emailEmptyError.style.display = 'none';
+        emailFormatError.style.removeProperty('display');
+        emailEmptyErr.style.removeProperty('display');
         return true;
     }
 }
 
-function validateCheckBoxEvents(checkboxes) {
+function checkboxEventsHelper(checkboxes) {
     const activitiesHint = document.getElementById('activities-hint');
     let isSelected = false;
     for (let i = 0; i < checkboxes.length; i++) {
@@ -279,12 +267,12 @@ function validateCheckBoxEvents(checkboxes) {
     } else {
         activities.classList.add('valid');
         activities.classList.remove('not-valid');
-        activitiesHint.style.display = 'none';
+        activitiesHint.style.removeProperty('display');
         return true;
     }
 }
 
-function validateExpDateField(expDate) {
+function expDateFieldHelper(expDate) {
     if(expDate.value === 'Select Date') {
         expDate.parentElement.classList.add('not-valid');
         expDate.parentElement.classList.remove('valid');
@@ -300,7 +288,7 @@ function validateExpDateField(expDate) {
     }
 }
 
-function validateExpYearField(expYear) {
+function expYearFieldHelper(expYear) {
     if(expYear.value === 'Select Year') {
         expYear.parentElement.classList.add('not-valid');
         expYear.parentElement.classList.remove('valid');
@@ -318,81 +306,81 @@ function validateExpYearField(expYear) {
 
 
 
-function validateCardNumberField(card) {
+function cardNumberFieldHelper(card) {
     const cardFormatError = document.getElementById('cc-hint');
     // display correct message based on error being thrown
     if (!card.value) {
         card.parentElement.classList.add('not-valid');
         card.parentElement.classList.remove('valid');
-        cardEmptyError.style.display = 'inline';
-        cardFormatError.style.display = 'none';
+        cardEmptyErr.style.display = 'inline';
+        cardFormatError.style.removeProperty('display');
         return false;
     } else if (!testCardNum(card.value)) {
         card.parentElement.classList.add('not-valid');
         card.parentElement.classList.remove('valid');
         cardFormatError.style.display = 'inline';
-        cardEmptyError.style.display = 'none';
+        cardEmptyErr.style.removeProperty('display');
         return false;
     } else {
         card.parentElement.classList.add('valid');
         card.parentElement.classList.remove('not-valid');
-        cardFormatError.style.display = 'none';
-        cardEmptyError.style.display = 'none';
+        cardFormatError.style.removeProperty('display');
+        cardEmptyErr.style.removeProperty('display');
         return true;
     }
 }
 
-function validateZipCodeField(zip) {
-    const zipFormatError = document.getElementById('zip-hint');
+function zipCodeFieldHelper(zip) {
+    const zipFormatErr = document.getElementById('zip-hint');
     // display correct message based on error being thrown
     if (!zip.value) {
         zip.parentElement.classList.add('not-valid');
         zip.parentElement.classList.remove('valid');
-        zipEmptyError.style.display = 'inline';
-        zipFormatError.style.display = 'none';
+        zipEmptyErr.style.display = 'inline';
+        zipFormatErr.style.removeProperty('display');
         return false;
     } else if (!testZipCode(zip.value)) {
         zip.parentElement.classList.add('not-valid');
         zip.parentElement.classList.remove('valid');
-        zipFormatError.style.display = 'inline';
-        zipEmptyError.style.display = 'none';
+        zipFormatErr.style.display = 'inline';
+        zipEmptyErr.style.removeProperty('display');
         return false;
     } else {
         zip.parentElement.classList.add('valid');
         zip.parentElement.classList.remove('not-valid');
-        zipFormatError.style.display = 'none';
-        zipEmptyError.style.display = 'none';
+        zipFormatErr.style.removeProperty('display');
+        zipEmptyErr.style.removeProperty('display');
         return true;
     }
 }
 
-function validateCVVField(cvv) {
+function cvvFieldHelper(cvv) {
     const cvvFormatError = document.getElementById('cvv-hint');
     // display correct message based on error being thrown
     if (!cvv.value) {
         cvv.parentElement.classList.add('not-valid');
         cvv.parentElement.classList.remove('valid');
-        cvvEmptyError.style.display = 'inline';
-        cvvFormatError.style.display = 'none';
+        cvvEmptyErr.style.display = 'inline';
+        cvvFormatError.style.removeProperty('display');
         return false;
     } else if (!testCVV(cvv.value)) {
         cvv.parentElement.classList.add('not-valid');
         cvv.parentElement.classList.remove('valid');
         cvvFormatError.style.display = 'inline';
-        cvvEmptyError.style.display = 'none';
+        cvvEmptyErr.style.removeProperty('display');
         return false;
     } else {
         cvv.parentElement.classList.add('valid');
         cvv.parentElement.classList.remove('not-valid');
-        cvvFormatError.style.display = 'none';
-        cvvEmptyError.style.display = 'none';
+        cvvFormatError.style.removeProperty('display');
+        cvvEmptyErr.style.removeProperty('display');
         return true;
     }
 }
 
 // test the required input elements using regex 
 function testEmail(email) {
-    const regex = /\S+@\S+\.\w+/;
+    const regex = /^\S+@\S+\.\w+$/;
     return regex.test(email);
 }
 
