@@ -1,28 +1,29 @@
 // focus name field by default
-const userName = document.getElementById('name');
+const nameField = document.getElementById('name');
 const nameEmptyErr = document.getElementById('name-hint');
-userName.focus();
+nameField.focus();
 // add real-time validation to name field
-userName.addEventListener('keyup', () => { requiredFieldHelper(userName, nameEmptyErr); });
-userName.addEventListener('blur', () => { requiredFieldHelper(userName, nameEmptyErr); });
+nameField.addEventListener('keyup', () => { requiredFieldHelper(nameField, nameEmptyErr); });
+nameField.addEventListener('blur', () => { requiredFieldHelper(nameField, nameEmptyErr); });
 
-const userEmail = document.getElementById('email');
-// display real-time message if the field is left empty
+const emailField = document.getElementById('email');
+// each field handles a separate error 
 const emailFormatErr = document.getElementById('email-hint');
 const emailBlankErr = document.createElement('span');
 emailBlankErr.textContent = 'Email address cannot be empty';
 emailBlankErr.classList.add('email-hint');
 emailBlankErr.classList.add('hint');
 // error message must be added to the parent label 
-userEmail.parentElement.appendChild(emailBlankErr);
+emailField.parentElement.appendChild(emailBlankErr);
 // add real-time validation to the email field
-userEmail.addEventListener('keyup', (event) => {
+emailField.addEventListener('keyup', (event) => {
     // this line prevents a message from being displayed right away if field is tabbed into
     if (event.code !== 'Tab'){
-        requiredFieldHelper(userEmail, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/);
+        requiredFieldHelper(emailField, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/);
     }
 });
-userEmail.addEventListener('blur', () => { requiredFieldHelper(userEmail, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/); });
+// call the helper function if the field is left blank or formatted incorrectly
+emailField.addEventListener('blur', () => { requiredFieldHelper(emailField, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/); });
 
 // hide other job role field by default
 const otherJobRole = document.getElementById('other-job-role');
@@ -74,7 +75,7 @@ cvv.addEventListener('keyup', (event) => {
 });
 cvv.addEventListener('blur', () => { requiredFieldHelper(cvv, cvvEmptyErr, cvvFormatErr, /^\d{3}$/); });
 
-// initialize cc dropdown elements
+// initialize the expiration date fields 
 const paymentMethodBox = document.getElementById('payment-method');
 const expDate = document.getElementById('exp-month');
 const expDateErr = document.createElement('span');
@@ -111,16 +112,16 @@ title.addEventListener('change', () => {
 const color = document.getElementById('color');
 color.disabled = true;
 
-const shirtDesigns = document.getElementById('design');
-shirtDesigns.addEventListener('change', () => {
+const shirtTheme = document.getElementById('design');
+shirtTheme.addEventListener('change', () => {
     color.disabled = false;
-    if (shirtDesigns.value === 'js puns') {
-        hideColors(shirtDesigns.value);
-    } else if (shirtDesigns.value === 'heart js') {
-        hideColors(shirtDesigns.value);
+    if (shirtTheme.value === 'js puns') {
+        hideColors(shirtTheme.value);
+    } else if (shirtTheme.value === 'heart js') {
+        hideColors(shirtTheme.value);
     }
 });
-
+// hides color options based on selected theme
 function hideColors(theme) {
     for(let i = 0; i < color.options.length; i++) {
         const option = color.options[i];
@@ -136,7 +137,9 @@ const activities = document.getElementById('activities');
 activities.addEventListener('change', () => {
     const checkboxes = activities.getElementsByTagName('input');
     const activitiesCost = document.getElementById('activities-cost');
+    // track the sum of event costs in a 'Number' datatype
     let costCount = 0;
+    // dynamically update the textContent of 'activitiesCost' 
     let totalCost = '';
     for (let i = 0; i < checkboxes.length; i++) {
         const checkbox = checkboxes[i];
@@ -144,9 +147,11 @@ activities.addEventListener('change', () => {
             costCount += parseInt(checkbox.dataset.cost);
             totalCost = activitiesCost.textContent.replace(/\d+/, `${costCount}`);
             activitiesCost.textContent = totalCost;
-            isScheduleConflict(checkbox, checkboxes, true);
+            // disable the event with an overlapping schedule by passing 'true'
+            scheduleConflict(checkbox, checkboxes, true);
         } else {
-            isScheduleConflict(checkbox, checkboxes, false);
+            // enable the event if checkbox unchecked by passing 'false'
+            scheduleConflict(checkbox, checkboxes, false);
         }
     }
     // set cost count to zero if all the activities remain unchecked 
@@ -160,7 +165,7 @@ activities.addEventListener('change', () => {
     }
 });
 
-function isScheduleConflict(checkbox, checkboxes, disable) {
+function scheduleConflict(checkbox, checkboxes, disable) {
     for (let j = 1; j < checkboxes.length; j++) {
         if (checkboxes[j].dataset.dayAndTime === checkbox.dataset.dayAndTime && checkboxes[j].name !== checkbox.name) {
             checkboxes[j].disabled = disable;
@@ -170,7 +175,7 @@ function isScheduleConflict(checkbox, checkboxes, disable) {
 }
 
 const checkboxes = activities.getElementsByTagName('input');
-// add a focus and blur listener to all checkboxes
+// add a focus and blur listener to all checkboxes for accessibility purposes
 for (let i = 0; i < checkboxes.length; i++) {
     const checkbox = checkboxes[i];
     checkbox.addEventListener('focus', () => {
@@ -180,10 +185,8 @@ for (let i = 0; i < checkboxes.length; i++) {
         checkbox.parentElement.classList.remove('focus');
     });
 }
-
 // shows the specified option passed as the second parameter, and hides all other payment options 
 function showPaymentOption(optionList, optionVal = 'credit-card') {
-
     const option = document.getElementById(optionVal);
     option.hidden = false;
     // hide unselected payment options
@@ -192,53 +195,34 @@ function showPaymentOption(optionList, optionVal = 'credit-card') {
             const hideOption = document.getElementById(optionList[i].value);
             hideOption.hidden = true;
         }
-        // reset the error messages if a alternate payment method is selected
-        if (optionVal !== 'credit-card') {
-            cardNum.parentElement.classList.remove('not-valid');
-            cardFormatErr.style.removeProperty('display');
-            cardBlankErr.style.removeProperty('display');
-
-            zipCode.parentElement.classList.remove('not-valid');
-            zipFormatErr.style.removeProperty('display');
-            zipBlankErr.style.removeProperty('display');
-
-            cvv.parentElement.classList.remove('not-valid');
-            cvvFormatErr.style.removeProperty('display');
-            cvvEmptyErr.style.removeProperty('display');
-
-            expDate.parentElement.classList.remove('not-valid');
-            expDateErr.style.removeProperty('display');
-
-            expYear.parentElement.classList.remove('not-valid');
-            expYearErr.style.removeProperty('display');
-
-            paymentMethodBox.style.removeProperty('padding-bottom');
-        } 
     }
 }
 
 const form = document.querySelector('form');
 form.addEventListener('submit', (event) => {
-    if (!requiredFieldHelper(userName, nameEmptyErr)) { event.preventDefault(); }
-
-    if (!requiredFieldHelper(userEmail, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/)) { event.preventDefault(); }
-    
-    if (!checkboxEventHelper(activities.getElementsByTagName('input'))) { event.preventDefault(); }
+    // store validation results in boolean values
+    const nameHelper = requiredFieldHelper(nameField, nameEmptyErr);
+    const emailHelper = requiredFieldHelper(emailField, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/);
+    const checkboxHelper = checkboxEventHelper(activities.getElementsByTagName('input'));
+    let expDateHelper = true;
+    let expYearHelper = true;
+    let cardNumHelper = true;
+    let zipCodeHelper = true;
+    let cvvHelper = true;
 
     if (paymentMethod.value === 'credit-card') {
-        
-        if (!expirationFieldHelper(expDate, expDateErr, 'Select Date')) { event.preventDefault(); }
-
-        if (!expirationFieldHelper(expYear, expYearErr, 'Select Year')) { event.preventDefault(); }
-        
-        if (!requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/)) { event.preventDefault(); }
-        
-        if (!requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/)) { event.preventDefault(); }
-        
-        if (!requiredFieldHelper(cvv, cvvEmptyErr, cvvFormatErr, /^\d{3}$/)) { event.preventDefault(); }
+        expDateHelper = expirationFieldHelper(expDate, expDateErr, 'Select Date');
+        expYearHelper = expirationFieldHelper(expYear, expYearErr, 'Select Year');
+        cardNumHelper = requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/);
+        zipCodeHelper = requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/);
+        cvvHelper = requiredFieldHelper(cvv, cvvEmptyErr, cvvFormatErr, /^\d{3}$/);
+    }
+    // if any one of the fields fail do not let form submit
+    if (!nameHelper || !emailHelper || !checkboxHelper || !expDateHelper || !expYearHelper || !cardNumHelper || !zipCodeHelper || !cvvHelper) {
+        event.preventDefault();
     }
 });
-
+// validation for the checkbox fields
 function checkboxEventHelper(checkboxes) {
     const activitiesHint = document.getElementById('activities-hint');
     let isSelected = false;
@@ -261,7 +245,7 @@ function checkboxEventHelper(checkboxes) {
         return true;
     }
 }
-
+// validation for the expiration date fields
 function expirationFieldHelper(date, dateFieldErr, optionVal) {
     if(date.value === optionVal) {
         date.parentElement.classList.add('not-valid');
@@ -279,7 +263,7 @@ function expirationFieldHelper(date, dateFieldErr, optionVal) {
         return true;
     }
 }
-// validates the required fields
+// general validation that accepts just a required field element and a blank field object
 function requiredFieldHelper(requiredField, blankErr, formatErr = null, regex = null) {
     // display correct message based on error being thrown
     if (!requiredField.value) {
