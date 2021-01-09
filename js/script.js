@@ -2,68 +2,65 @@
 const userName = document.getElementById('name');
 const nameEmptyErr = document.getElementById('name-hint');
 userName.focus();
-// adds real-time validation to name field
-userName.addEventListener('keyup', () => { nameFieldHelper(userName); });
-userName.addEventListener('blur', () => { nameFieldHelper(userName); });
+// add real-time validation to name field
+userName.addEventListener('keyup', () => { requiredFieldHelper(userName, nameEmptyErr); });
+userName.addEventListener('blur', () => { requiredFieldHelper(userName, nameEmptyErr); });
 
 const userEmail = document.getElementById('email');
 // display real-time message if the field is left empty
-const emailEmptyErr = document.createElement('span');
-emailEmptyErr.textContent = 'Email address cannot be empty';
-emailEmptyErr.classList.add('email-hint');
-emailEmptyErr.classList.add('hint');
+const emailFormatErr = document.getElementById('email-hint');
+const emailBlankErr = document.createElement('span');
+emailBlankErr.textContent = 'Email address cannot be empty';
+emailBlankErr.classList.add('email-hint');
+emailBlankErr.classList.add('hint');
 // error message must be added to the parent label 
-userEmail.parentElement.appendChild(emailEmptyErr);
-// adds real-time validation to the email field
+userEmail.parentElement.appendChild(emailBlankErr);
+// add real-time validation to the email field
 userEmail.addEventListener('keyup', (event) => {
     // this line prevents a message from being displayed right away if field is tabbed into
     if (event.code !== 'Tab'){
-        emailFieldHelper(userEmail);
+        requiredFieldHelper(userEmail, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/);
     }
 });
-userEmail.addEventListener('blur', () => { emailFieldHelper(userEmail); });
+userEmail.addEventListener('blur', () => { requiredFieldHelper(userEmail, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/); });
 
 // hide other job role field by default
 const otherJobRole = document.getElementById('other-job-role');
 otherJobRole.hidden = true;
 
-// select the credit-card payment option by default
-const paymentMethod = document.getElementById('payment');
-paymentMethod.value = 'credit-card';
-showPaymentOption(paymentMethod);
-paymentMethod.addEventListener('change', () => showPaymentOption(paymentMethod, paymentMethod.value));
-
 const cardNum = document.getElementById('cc-num');
-
-const cardEmptyErr = document.createElement('span');
-cardEmptyErr.textContent = 'Credit card number cannot be empty';
-cardEmptyErr.classList.add('cc-hint');
-cardEmptyErr.classList.add('hint');
+const cardFormatErr = document.getElementById('cc-hint');
+const cardBlankErr = document.createElement('span');
+cardBlankErr.textContent = 'Credit card number cannot be empty';
+cardBlankErr.classList.add('cc-hint');
+cardBlankErr.classList.add('hint');
 // add error message to the parent label 
-cardNum.parentElement.appendChild(cardEmptyErr);
-// adds real-time validation to the card input fields
+cardNum.parentElement.appendChild(cardBlankErr);
+// add real-time validation to the card input fields
 cardNum.addEventListener('keyup', (event) => {
     if (event.code !== 'Tab') {
-        cardNumberFieldHelper(cardNum);
+        requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/);
     }
 });
-cardNum.addEventListener('blur', () => { cardNumberFieldHelper(cardNum); });
+cardNum.addEventListener('blur', () => { requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/); });
 
 const zipCode = document.getElementById('zip');
-const zipEmptyErr = document.createElement('span');
-zipEmptyErr.textContent = 'Zip Code cannot be empty';
-zipEmptyErr.classList.add('zip-hint');
-zipEmptyErr.classList.add('hint');
+const zipFormatErr = document.getElementById('zip-hint');
+const zipBlankErr = document.createElement('span');
+zipBlankErr.textContent = 'Zip Code cannot be empty';
+zipBlankErr.classList.add('zip-hint');
+zipBlankErr.classList.add('hint');
 // add error message to the parent label 
-zipCode.parentElement.appendChild(zipEmptyErr);
+zipCode.parentElement.appendChild(zipBlankErr);
 zipCode.addEventListener('keyup', (event) => {
     if (event.code !== 'Tab') {
-        zipCodeFieldHelper(zipCode);
+        requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/);
     }
 });       
-zipCode.addEventListener('blur', () => { zipCodeFieldHelper(zipCode); });
+zipCode.addEventListener('blur', () => { requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/); });
 
 const cvv = document.getElementById('cvv');
+const cvvFormatErr = document.getElementById('cvv-hint');
 const cvvEmptyErr = document.createElement('span');
 cvvEmptyErr.textContent = 'Zip Code cannot be empty';
 cvvEmptyErr.classList.add('zip-hint');
@@ -72,10 +69,10 @@ cvvEmptyErr.classList.add('hint');
 cvv.parentElement.appendChild(cvvEmptyErr);
 cvv.addEventListener('keyup', (event) => {
     if (event.code !== 'Tab') {
-        cvvFieldHelper(cvv);
+        requiredFieldHelper(cvv, cvvEmptyErr, cvvFormatErr, /^\d{3}$/);
     }
 });
-cvv.addEventListener('blur', () => { cvvFieldHelper(cvv); });
+cvv.addEventListener('blur', () => { requiredFieldHelper(cvv, cvvEmptyErr, cvvFormatErr, /^\d{3}$/); });
 
 // initialize cc dropdown elements
 const paymentMethodBox = document.getElementById('payment-method');
@@ -84,14 +81,22 @@ const expDateErr = document.createElement('span');
 expDateErr.textContent = 'Please select a date from the dropdown';
 expDateErr.classList.add('hint');
 expDate.parentElement.appendChild(expDateErr);
-expDate.addEventListener('blur', () => { expDateFieldHelper(expDate); });
+expDate.addEventListener('change', () => { expirationFieldHelper(expDate, expDateErr, 'Select Date'); });
+expDate.addEventListener('blur', () => { expirationFieldHelper(expDate, expDateErr, 'Select Date'); });
 
 const expYear = document.getElementById('exp-year');
 const expYearErr = document.createElement('span');
 expYearErr.textContent = 'Please select a year from the dropdown';
 expYearErr.classList.add('hint');
 expYear.parentElement.appendChild(expYearErr);
-expYear.addEventListener('blur', () => { expYearFieldHelper(expYear); });
+expYear.addEventListener('change', () => { expirationFieldHelper(expYear, expYearErr, 'Select Year'); });
+expYear.addEventListener('blur', () => { expirationFieldHelper(expYear, expYearErr, 'Select Year'); });
+
+// select the credit-card payment option by default
+const paymentMethod = document.getElementById('payment');
+paymentMethod.value = 'credit-card';
+showPaymentOption(paymentMethod);
+paymentMethod.addEventListener('change', () => { showPaymentOption(paymentMethod, paymentMethod.value); });
         
 // display hidden field if title is other
 const title = document.getElementById('title');
@@ -149,9 +154,9 @@ activities.addEventListener('change', () => {
         totalCost = activitiesCost.textContent.replace(/\d+/, `${costCount}`);
         activitiesCost.textContent = totalCost;
         // throw an error if checkbox left unchecked
-        checkboxEventsHelper(checkboxes);
+        checkboxEventHelper(checkboxes);
     } else {
-        checkboxEventsHelper(checkboxes);
+        checkboxEventHelper(checkboxes);
     }
 });
 
@@ -178,6 +183,7 @@ for (let i = 0; i < checkboxes.length; i++) {
 
 // shows the specified option passed as the second parameter, and hides all other payment options 
 function showPaymentOption(optionList, optionVal = 'credit-card') {
+
     const option = document.getElementById(optionVal);
     option.hidden = false;
     // hide unselected payment options
@@ -186,70 +192,54 @@ function showPaymentOption(optionList, optionVal = 'credit-card') {
             const hideOption = document.getElementById(optionList[i].value);
             hideOption.hidden = true;
         }
+        // reset the error messages if a alternate payment method is selected
+        if (optionVal !== 'credit-card') {
+            cardNum.parentElement.classList.remove('not-valid');
+            cardFormatErr.style.removeProperty('display');
+            cardBlankErr.style.removeProperty('display');
+
+            zipCode.parentElement.classList.remove('not-valid');
+            zipFormatErr.style.removeProperty('display');
+            zipBlankErr.style.removeProperty('display');
+
+            cvv.parentElement.classList.remove('not-valid');
+            cvvFormatErr.style.removeProperty('display');
+            cvvEmptyErr.style.removeProperty('display');
+
+            expDate.parentElement.classList.remove('not-valid');
+            expDateErr.style.removeProperty('display');
+
+            expYear.parentElement.classList.remove('not-valid');
+            expYearErr.style.removeProperty('display');
+
+            paymentMethodBox.style.removeProperty('padding-bottom');
+        } 
     }
 }
 
 const form = document.querySelector('form');
 form.addEventListener('submit', (event) => {
-    if (!nameFieldHelper(userName)) { event.preventDefault(); }
+    if (!requiredFieldHelper(userName, nameEmptyErr)) { event.preventDefault(); }
 
-    if (!emailFieldHelper(userEmail)) { event.preventDefault(); }
+    if (!requiredFieldHelper(userEmail, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/)) { event.preventDefault(); }
     
-    if (!checkboxEventsHelper(activities.getElementsByTagName('input'))) { event.preventDefault(); }
+    if (!checkboxEventHelper(activities.getElementsByTagName('input'))) { event.preventDefault(); }
 
     if (paymentMethod.value === 'credit-card') {
         
-        if (!expDateFieldHelper(expDate)) { event.preventDefault(); }
+        if (!expirationFieldHelper(expDate, expDateErr, 'Select Date')) { event.preventDefault(); }
 
-        if (!expYearFieldHelper(expYear)) { event.preventDefault(); }
+        if (!expirationFieldHelper(expYear, expYearErr, 'Select Year')) { event.preventDefault(); }
         
-        if (!cardNumberFieldHelper(cardNum)) { event.preventDefault(); }
+        if (!requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/)) { event.preventDefault(); }
         
-        if (!zipCodeFieldHelper(zipCode)) { event.preventDefault(); }
+        if (!requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/)) { event.preventDefault(); }
         
-        if (!cvvFieldHelper(cvv)) { event.preventDefault(); }
+        if (!requiredFieldHelper(cvv, cvvEmptyErr, cvvFormatErr, /^\d{3}$/)) { event.preventDefault(); }
     }
 });
 
-function nameFieldHelper(name) {
-    if (!name.value) {
-        name.parentElement.classList.add('not-valid');
-        name.parentElement.classList.remove('valid');
-        nameEmptyErr.style.display = 'inline';
-        return false;
-    } else {
-        name.parentElement.classList.add('valid');
-        name.parentElement.classList.remove('not-valid');
-        nameEmptyErr.style.removeProperty('display');
-        return true;
-    }
-}
-
-function emailFieldHelper(email) {
-    const emailFormatError = document.getElementById('email-hint');
-    // display correct message based on error being thrown
-    if (!email.value) {
-        email.parentElement.classList.add('not-valid');
-        email.parentElement.classList.remove('valid');        
-        emailEmptyErr.style.display = 'inline';
-        emailFormatError.style.removeProperty('display');
-        return false;
-    } else if (!testEmail(email.value)){
-        email.parentElement.classList.add('not-valid');
-        email.parentElement.classList.remove('valid');
-        emailFormatError.style.display = 'inline';
-        emailEmptyErr.style.removeProperty('display');
-        return false;
-    } else {
-        email.parentElement.classList.add('valid');
-        email.parentElement.classList.remove('not-valid'); 
-        emailFormatError.style.removeProperty('display');
-        emailEmptyErr.style.removeProperty('display');
-        return true;
-    }
-}
-
-function checkboxEventsHelper(checkboxes) {
+function checkboxEventHelper(checkboxes) {
     const activitiesHint = document.getElementById('activities-hint');
     let isSelected = false;
     for (let i = 0; i < checkboxes.length; i++) {
@@ -272,129 +262,56 @@ function checkboxEventsHelper(checkboxes) {
     }
 }
 
-function expDateFieldHelper(expDate) {
-    if(expDate.value === 'Select Date') {
-        expDate.parentElement.classList.add('not-valid');
-        expDate.parentElement.classList.remove('valid');
+function expirationFieldHelper(date, dateFieldErr, optionVal) {
+    if(date.value === optionVal) {
+        date.parentElement.classList.add('not-valid');
+        date.parentElement.classList.remove('valid');
         paymentMethodBox.style.paddingBottom = '20px';
-        expDateErr.style.display = 'inline';
+        dateFieldErr.style.display = 'inline';
         return false;
     } else {
-        expDate.parentElement.classList.add('valid');
-        expDate.parentElement.classList.remove('not-valid');
-        paymentMethodBox.style.removeProperty('padding-bottom');
-        expDateErr.style.removeProperty('display');
+        date.parentElement.classList.add('valid');
+        date.parentElement.classList.remove('not-valid');
+        dateFieldErr.style.removeProperty('display');
+        if (!expYearErr.style.display && !expDateErr.style.display) {
+            paymentMethodBox.style.removeProperty('padding-bottom');
+        } 
         return true;
     }
 }
-
-function expYearFieldHelper(expYear) {
-    if(expYear.value === 'Select Year') {
-        expYear.parentElement.classList.add('not-valid');
-        expYear.parentElement.classList.remove('valid');
-        paymentMethodBox.style.paddingBottom = '20px';
-        expYearErr.style.display = 'inline';
-        return false;
-    } else {
-        expYear.parentElement.classList.add('valid');
-        expYear.parentElement.classList.remove('not-valid');
-        paymentMethodBox.style.removeProperty('padding-bottom');
-        expYearErr.style.removeProperty('display');
-        return true;
-    }
-}
-
-
-
-function cardNumberFieldHelper(card) {
-    const cardFormatError = document.getElementById('cc-hint');
+// validates the required fields
+function requiredFieldHelper(requiredField, blankErr, formatErr = null, regex = null) {
     // display correct message based on error being thrown
-    if (!card.value) {
-        card.parentElement.classList.add('not-valid');
-        card.parentElement.classList.remove('valid');
-        cardEmptyErr.style.display = 'inline';
-        cardFormatError.style.removeProperty('display');
+    if (!requiredField.value) {
+        requiredField.parentElement.classList.add('not-valid');
+        requiredField.parentElement.classList.remove('valid');
+        blankErr.style.display = 'inline';
+        if (formatErr !== null) {
+            formatErr.style.removeProperty('display');
+        }
         return false;
-    } else if (!testCardNum(card.value)) {
-        card.parentElement.classList.add('not-valid');
-        card.parentElement.classList.remove('valid');
-        cardFormatError.style.display = 'inline';
-        cardEmptyErr.style.removeProperty('display');
+    } else if (!regexTest(regex, requiredField.value)) {
+        requiredField.parentElement.classList.add('not-valid');
+        requiredField.parentElement.classList.remove('valid');
+        formatErr.style.display = 'inline';
+        blankErr.style.removeProperty('display');
         return false;
     } else {
-        card.parentElement.classList.add('valid');
-        card.parentElement.classList.remove('not-valid');
-        cardFormatError.style.removeProperty('display');
-        cardEmptyErr.style.removeProperty('display');
+        requiredField.parentElement.classList.add('valid');
+        requiredField.parentElement.classList.remove('not-valid');
+        if (formatErr !== null) {
+            formatErr.style.removeProperty('display');
+        }
+        blankErr.style.removeProperty('display');
         return true;
     }
 }
-
-function zipCodeFieldHelper(zip) {
-    const zipFormatErr = document.getElementById('zip-hint');
-    // display correct message based on error being thrown
-    if (!zip.value) {
-        zip.parentElement.classList.add('not-valid');
-        zip.parentElement.classList.remove('valid');
-        zipEmptyErr.style.display = 'inline';
-        zipFormatErr.style.removeProperty('display');
-        return false;
-    } else if (!testZipCode(zip.value)) {
-        zip.parentElement.classList.add('not-valid');
-        zip.parentElement.classList.remove('valid');
-        zipFormatErr.style.display = 'inline';
-        zipEmptyErr.style.removeProperty('display');
-        return false;
-    } else {
-        zip.parentElement.classList.add('valid');
-        zip.parentElement.classList.remove('not-valid');
-        zipFormatErr.style.removeProperty('display');
-        zipEmptyErr.style.removeProperty('display');
-        return true;
-    }
-}
-
-function cvvFieldHelper(cvv) {
-    const cvvFormatError = document.getElementById('cvv-hint');
-    // display correct message based on error being thrown
-    if (!cvv.value) {
-        cvv.parentElement.classList.add('not-valid');
-        cvv.parentElement.classList.remove('valid');
-        cvvEmptyErr.style.display = 'inline';
-        cvvFormatError.style.removeProperty('display');
-        return false;
-    } else if (!testCVV(cvv.value)) {
-        cvv.parentElement.classList.add('not-valid');
-        cvv.parentElement.classList.remove('valid');
-        cvvFormatError.style.display = 'inline';
-        cvvEmptyErr.style.removeProperty('display');
-        return false;
-    } else {
-        cvv.parentElement.classList.add('valid');
-        cvv.parentElement.classList.remove('not-valid');
-        cvvFormatError.style.removeProperty('display');
-        cvvEmptyErr.style.removeProperty('display');
-        return true;
-    }
-}
-
 // test the required input elements using regex 
-function testEmail(email) {
-    const regex = /^\S+@\S+\.\w+$/;
-    return regex.test(email);
+function regexTest(regex, val) {
+    if (regex === null) {
+        return true;
+    } else {
+        return regex.test(val);
+    }
 }
 
-function testCardNum(cardNum) {
-    const regex = /^\d{13,16}$/;
-    return regex.test(cardNum);
-}
-
-function testZipCode(zipCode) {
-    const regex = /^\d{5}$/;
-    return regex.test(zipCode);
-}
-
-function testCVV(cvv) {
-    const regex = /^\d{3}$/;
-    return regex.test(cvv);
-}
