@@ -17,5 +17,5 @@ The following fields display an error message if the field is formatted incorrec
 - the zipFormatErr variable displays the message "Zip Code must be 5 digits" to the user
 - the cvvFormatErr variable displays the message "CVV must be 3 digits" to the user
 
-- All error messages interact with the user dynamically
+All error messages interact with the user dynamically
 
