@@ -13,6 +13,7 @@ The following fields display an error message if the field is left empty or inco
 Not required but the following fields also provide a validation message if left blank:
 - expDateErr field displays the message "Please select a date from the dropdown"
 - expYearErr field displays the message "Please select a year from the dropdown"
+- added a id to the payment method div to dynamically display the hint messages below the expiration date fields
 
 
 
