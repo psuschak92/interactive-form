@@ -169,9 +169,9 @@ activities.addEventListener('change', () => {
         totalCost = activitiesCost.textContent.replace(/\d+/, `${costCount}`);
         activitiesCost.textContent = totalCost;
         // throw an error if checkbox left unchecked
-        checkboxEventValidator(checkboxes);
+        checkboxFieldValidator(checkboxes);
     } else {
-        checkboxEventValidator(checkboxes);
+        checkboxFieldValidator(checkboxes);
     }
 });
 
@@ -196,7 +196,7 @@ form.addEventListener('submit', (event) => {
     // store validation results in boolean values
     const nameHelper = fieldValidator(nameField, nameHint, nameHint.textContent);
     const emailHelper = fieldValidator(emailField, emailHint, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/);
-    const checkboxHelper = checkboxEventValidator(activities.getElementsByTagName('input'));
+    const checkboxHelper = checkboxFieldValidator(activities.getElementsByTagName('input'));
     let expDateHelper = true;
     let expYearHelper = true;
     let cardNumHelper = true;
@@ -250,7 +250,7 @@ function showPaymentOption(optionList, optionVal = 'credit-card') {
     
 */
 // validation for the checkbox fields
-function checkboxEventValidator(checkboxes) {
+function checkboxFieldValidator(checkboxes) {
     let isSelected = false;
     for (let i = 0; i < checkboxes.length; i++) {
         // at least one box must be checked
