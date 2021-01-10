@@ -3,45 +3,42 @@
     **GLOBAL VARIABLES**
 
     * This section includes all the required fields and their listener events
-    * The format error fields dynamically display format error messages to the user
-    * The blank error fields alternatively display a 'field cannot be blank' error message
+    * The hint fields are updated according to the type of error 
+    * 
     
 */
-
 /*
 
     **NAME FIELDS**
     
 */
 const nameField = document.getElementById('name');
-const nameBlankErr = document.getElementById('name-hint');
+const nameHint = document.getElementById('name-hint');
 nameField.focus();
 nameField.addEventListener('keyup', (event) => { 
+    console.log(event.code);
     if (event.code !== 'ShiftLeft' && event.code !== 'Tab') {
-        removeErrorMessage(nameField, nameBlankErr); 
+        removeErrorMessage(nameField, nameHint); 
     }
 });
-nameField.addEventListener('blur', () => { requiredFieldHelper(nameField, nameBlankErr); });
+nameField.addEventListener('blur', () => { fieldHelper(nameField, nameHint, nameHint.textContent); });
 /*
 
     **EMAIL FIELDS**
     
 */
 const emailField = document.getElementById('email');
-const emailFormatErr = document.getElementById('email-hint');
-const emailBlankErr = document.createElement('span');
-emailBlankErr.textContent = 'Email address cannot be blank';
-emailBlankErr.classList.add('email-hint');
-emailBlankErr.classList.add('hint');
-emailField.parentElement.appendChild(emailBlankErr);
+const emailHint = document.getElementById('email-hint');
+// save the original message
+const emailFormatErr = emailHint.textContent;
 emailField.addEventListener('keyup', (event) => {
     if (event.code !== 'ShiftLeft' && event.code !== 'Tab') {
         // hide the error as the user types
-        removeErrorMessage(emailField, emailBlankErr, emailFormatErr); 
+        removeErrorMessage(emailField, emailHint); 
     }
 });
 // call the helper function if the field is left blank or formatted incorrectly
-emailField.addEventListener('blur', () => { requiredFieldHelper(emailField, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/); });
+emailField.addEventListener('blur', () => { fieldHelper(emailField, emailHint, 'Email address cannot be blank', emailFormatErr, /^\S+@\S+\.\S+$/); });
 
 // hide other job role field by default
 const otherJobRole = document.getElementById('other-job-role');
@@ -53,46 +50,34 @@ otherJobRole.hidden = true;
     
 */
 const cardNum = document.getElementById('cc-num');
-const cardFormatErr = document.getElementById('cc-hint');
-const cardBlankErr = document.createElement('span');
-cardBlankErr.textContent = 'Credit card number cannot be blank';
-cardBlankErr.classList.add('cc-hint');
-cardBlankErr.classList.add('hint');
-cardNum.parentElement.appendChild(cardBlankErr);
+const cardHint = document.getElementById('cc-hint');
+const cardFormatErr = cardHint.textContent;
 cardNum.addEventListener('keyup', (event) => {
     if (event.code !== 'ShiftLeft' && event.code !== 'Tab') {
-        removeErrorMessage(cardNum, cardBlankErr, cardFormatErr);
+        removeErrorMessage(cardNum, cardHint);
     }
 });
-cardNum.addEventListener('blur', () => { requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/); });
+cardNum.addEventListener('blur', () => { fieldHelper(cardNum, cardHint, 'Credit card number cannot be blank', cardFormatErr, /^\d{13,16}$/); });
 
 const zipCode = document.getElementById('zip');
-const zipFormatErr = document.getElementById('zip-hint');
-const zipBlankErr = document.createElement('span');
-zipBlankErr.textContent = 'Zip Code cannot be blank';
-zipBlankErr.classList.add('zip-hint');
-zipBlankErr.classList.add('hint');
-zipCode.parentElement.appendChild(zipBlankErr);
+const zipCodeHint = document.getElementById('zip-hint');
+const zipCodeFormatErr = zipCodeHint.textContent;
 zipCode.addEventListener('keyup', (event) => {
     if (event.code !== 'ShiftLeft' && event.code !== 'Tab') {
-        removeErrorMessage(zipCode, zipBlankErr, zipFormatErr);
+        removeErrorMessage(zipCode, zipCodeHint);
     }
 });       
-zipCode.addEventListener('blur', () => { requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/); });
+zipCode.addEventListener('blur', () => { fieldHelper(zipCode, zipCodeHint, 'Zip Code cannot be blank', zipCodeFormatErr, /^\d{5}$/); });
 
 const cvv = document.getElementById('cvv');
-const cvvFormatErr = document.getElementById('cvv-hint');
-const cvvBlankErr = document.createElement('span');
-cvvBlankErr.textContent = 'Card Verification Value cannot be blank';
-cvvBlankErr.classList.add('zip-hint');
-cvvBlankErr.classList.add('hint');
-cvv.parentElement.appendChild(cvvBlankErr);
+const cvvHint = document.getElementById('cvv-hint');
+const cvvFormatErr = cvvHint.textContent;
 cvv.addEventListener('keyup', (event) => {
     if (event.code !== 'ShiftLeft' && event.code !== 'Tab') {
-        removeErrorMessage(cvv, cvvBlankErr, cvvFormatErr);
+        removeErrorMessage(cvv, cvvHint);
     }
 });
-cvv.addEventListener('blur', () => { requiredFieldHelper(cvv, cvvBlankErr, cvvFormatErr, /^\d{3}$/); });
+cvv.addEventListener('blur', () => { fieldHelper(cvv, cvvHint, 'Card Verification Value cannot be blank', cvvFormatErr, /^\d{3}$/); });
 
 // added id to payment method div in index.html
 const paymentMethodBox = document.getElementById('payment-method');
@@ -214,8 +199,8 @@ for (let i = 0; i < checkboxes.length; i++) {
 const form = document.querySelector('form');
 form.addEventListener('submit', (event) => {
     // store validation results in boolean values
-    const nameHelper = requiredFieldHelper(nameField, nameBlankErr);
-    const emailHelper = requiredFieldHelper(emailField, emailBlankErr, emailFormatErr, /^\S+@\S+\.\S+$/);
+    const nameHelper = fieldHelper(nameField, nameHint, nameHint.textContent);
+    const emailHelper = fieldHelper(emailField, emailHint, 'Email address cannot be blank', emailFormatErr, /^\S+@\S+\.\S+$/);
     const checkboxHelper = checkboxEventHelper(activities.getElementsByTagName('input'));
     let expDateHelper = true;
     let expYearHelper = true;
@@ -226,9 +211,9 @@ form.addEventListener('submit', (event) => {
     if (paymentMethod.value === 'credit-card') {
         expDateHelper = expirationFieldHelper(expDate, expDateErr, 'Select Date');
         expYearHelper = expirationFieldHelper(expYear, expYearErr, 'Select Year');
-        cardNumHelper = requiredFieldHelper(cardNum, cardBlankErr, cardFormatErr, /^\d{13,16}$/);
-        zipCodeHelper = requiredFieldHelper(zipCode, zipBlankErr, zipFormatErr, /^\d{5}$/);
-        cvvHelper = requiredFieldHelper(cvv, cvvBlankErr, cvvFormatErr, /^\d{3}$/);
+        cardNumHelper = fieldHelper(cardNum, cardHint, 'Credit card number cannot be blank', cardFormatErr, /^\d{13,16}$/);
+        zipCodeHelper = fieldHelper(zipCode, zipCodeHint, 'Zip Code cannot be blank', zipCodeFormatErr, /^\d{5}$/);
+        cvvHelper = fieldHelper(cvv, cvvHint, 'Card Verification Value cannot be blank', cvvFormatErr, /^\d{3}$/);
     }
     // if any one of the fields fail do not let form submit
     if (!nameHelper || !emailHelper || !checkboxHelper || !expDateHelper || !expYearHelper || !cardNumHelper || !zipCodeHelper || !cvvHelper) {
@@ -242,7 +227,6 @@ form.addEventListener('submit', (event) => {
     * This section includes all the functions called by the event listeners
     * The helper functions are called throughout the code to dynamically update the form
     * The removeErrorMessage function removes a potential error message while the user enters data into a required field
-    * 
 */
 
 // checks if selected event conflicts with another
@@ -312,30 +296,27 @@ function expirationFieldHelper(date, dateFieldErr, optionVal) {
         return true;
     }
 }
-// general validation that accepts just a required field element and a blank field object
-function requiredFieldHelper(requiredField, blankErr, formatErr = null, regex = null) {
+// validate all the required fields for blank or formatting errors
+function fieldHelper(requiredField, hint, blankErr, formatErr = '', regex = null) {
     // display correct message based on error being thrown
     if (!requiredField.value) {
         requiredField.parentElement.classList.add('not-valid');
         requiredField.parentElement.classList.remove('valid');
-        blankErr.style.display = 'inline';
-        if (formatErr !== null) {
-            formatErr.style.removeProperty('display');
-        }
+        // change the error message if the field is blank
+        hint.textContent = blankErr;
+        hint.style.display = 'inline';
         return false;
     } else if (!regexTest(regex, requiredField.value)) {
         requiredField.parentElement.classList.add('not-valid');
         requiredField.parentElement.classList.remove('valid');
-        formatErr.style.display = 'inline';
-        blankErr.style.removeProperty('display');
+        // change it back to the original message
+        hint.textContent = formatErr;
+        hint.style.display = 'inline';
         return false;
     } else {
         requiredField.parentElement.classList.add('valid');
         requiredField.parentElement.classList.remove('not-valid');
-        if (formatErr !== null) {
-            formatErr.style.removeProperty('display');
-        }
-        blankErr.style.removeProperty('display');
+        hint.style.removeProperty('display');
         return true;
     }
 }
@@ -344,17 +325,13 @@ function requiredFieldHelper(requiredField, blankErr, formatErr = null, regex = 
     **OTHER FUNCTIONS**
     
 */
-function removeErrorMessage(requiredField, blankErr, formatErr = null) {
+// remove the error message while user is typing
+function removeErrorMessage(requiredField, hint) {
     if (requiredField.parentElement.classList.contains('not-valid')) {
         requiredField.parentElement.classList.remove('not-valid');
     }
-    if (formatErr !== null) {
-        if (formatErr.style.display === 'inline') {
-            formatErr.style.removeProperty('display');
-        }
-    }
-    if (blankErr.style.display === 'inline') {
-        blankErr.style.removeProperty('display');
+    if (hint.style.display === 'inline') {
+        hint.style.removeProperty('display');
     }
     // remove css from the payment method div
     if (!expYearErr.style.display && !expDateErr.style.display) {
