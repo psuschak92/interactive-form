@@ -65,7 +65,7 @@ zipCode.addEventListener('blur', () => { fieldValidator(zipCode, zipCodeHint, zi
 const cvv = document.getElementById('cvv');
 const cvvHint = document.getElementById('cvv-hint');
 const cvvFormatErr = cvvHint.textContent;
-const cvvBlankErr = 'Card Verification Value cannot be blank';
+const cvvBlankErr = 'CVV cannot be blank';
 cvv.addEventListener('keyup', () => {
     // if (event.code !== 'ShiftLeft' && event.code !== 'Tab') {
         hideHintField(cvv, cvvHint);
