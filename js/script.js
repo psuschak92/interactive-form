@@ -115,6 +115,7 @@ title.addEventListener('change', () => {
     
 */
 const color = document.getElementById('color');
+const defaultVal = color.value;
 color.disabled = true;
 
 const shirtTheme = document.getElementById('design');
@@ -133,6 +134,7 @@ function hideColors(theme) {
         if (option.dataset.theme !== theme){
             option.hidden = true;
         } else {
+            color.value = defaultVal;
             option.hidden = false;
         } 
     }
